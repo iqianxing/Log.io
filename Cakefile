@@ -30,6 +30,8 @@ task 'compile', "Compiles CoffeeScript src/*.coffee to lib/*.js", ->
 task 'browserify', "Compiles client.coffee to browser-friendly JS", ->
   console.log "Browserifying src/client.coffee to lib/log.io.js"
   console.log "#{BROWSERIFY} -t coffeeify --extension=\".coffee\" src/client.coffee --exports process,require -o #{ __dirname }/lib/log.io.js"
+  exec "#{BROWSERIFY} src/init.js --exports process,require -o #{ __dirname }/lib/init.js", (err, stdout, stderr) ->
+    console.log stdout + stderr if err
   exec "#{BROWSERIFY} -t coffeeify --extension=\".coffee\" src/client.coffee --exports process,require -o #{ __dirname }/lib/log.io.js", (err, stdout, stderr) ->
     console.log stdout + stderr if err
 
