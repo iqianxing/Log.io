@@ -11,6 +11,8 @@ NODE = "#{ ENV } node"
 TEMPLATE_SRC = "#{ __dirname }/templates"
 TEMPLATE_OUTPUT = "#{ __dirname }/src/templates.coffee"
 
+console.log BROWSERIFY
+
 task 'build', "Builds Log.io package", ->
   invoke 'templates'
   invoke 'compile'
@@ -27,7 +29,8 @@ task 'compile', "Compiles CoffeeScript src/*.coffee to lib/*.js", ->
 
 task 'browserify', "Compiles client.coffee to browser-friendly JS", ->
   console.log "Browserifying src/client.coffee to lib/log.io.js"
-  exec "#{BROWSERIFY} src/client.coffee --exports process,require -o #{ __dirname }/lib/log.io.js", (err, stdout, stderr) ->
+  console.log "#{BROWSERIFY} -t coffeeify --extension=\".coffee\" src/client.coffee --exports process,require -o #{ __dirname }/lib/log.io.js"
+  exec "#{BROWSERIFY} -t coffeeify --extension=\".coffee\" src/client.coffee --exports process,require -o #{ __dirname }/lib/log.io.js", (err, stdout, stderr) ->
     console.log stdout + stderr if err
 
 task 'less', "Compiles less templates to CSS", ->
