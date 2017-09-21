@@ -12,10 +12,11 @@ screen.on 'new_log', (stream, node, level, message) ->
 
 ###
 
-if process.browser
-  $ = require 'jquery-browserify'
-else
-  $ = eval "require('jquery')"
+# if process.browser
+#   $ = require 'jquery'
+# else
+#   $ = eval "require('jquery')"
+$ = require 'jquery'
 backbone = require 'backbone'
 backbone.$ = $
 io = require 'socket.io-client'
@@ -24,6 +25,7 @@ templates = require './templates'
 
 # Cap LogMessages collection size
 MESSAGE_CAP = 5000
+
 
 ###
 ColorManager acts as a circular queue for color values.
@@ -85,9 +87,17 @@ class LogMessages extends backbone.Collection
   constructor: (args...) ->
     super args...
     @on 'add', @_capped
+    @isOverflow = false
 
   _capped: =>
-    @remove @at (@length - MESSAGE_CAP) if @length > MESSAGE_CAP
+    if @length > MESSAGE_CAP
+      @remove @at (@length - MESSAGE_CAP)
+      @isOverflow = true
+    else
+      @isOverflow = false
+
+  _isOverflow: =>
+    @isOverflow
 
 
 ###
@@ -111,8 +121,8 @@ class LogScreen extends backbone.Model
     pairIds.push pid if pid not in pairIds
     stream.trigger 'lwatch', node, @
     node.trigger 'lwatch', stream, @
-    stream.screens.update @
-    node.screens.update @
+    stream.screens.update @ if stream.screens.update
+    node.screens.update @ if node.screens.update
     @collection.trigger 'addPair'
 
   removePair: (stream, node) ->
@@ -124,6 +134,14 @@ class LogScreen extends backbone.Model
     stream.screens.remove @
     node.screens.remove @
     @collection.trigger 'removePair'
+
+  updateName: (name) ->
+    this.set 'name', name
+    # this.attributes.name = name
+    @collection.trigger 'updateName'
+
+  updateLogOptions: () ->
+    @collection.trigger 'updateLogOptions'
 
   hasPair: (stream, node) ->
     pid = @_pid stream, node
@@ -179,7 +197,7 @@ class WebClient
     _on 'disconnect', @_disconnect
 
   _initScreens: =>
-    @logScreens.on 'add remove addPair removePair', =>
+    @logScreens.on 'add remove addPair removePair updateName updateLogOptions', =>
       @localStorage['logScreens'] = JSON.stringify @logScreens.toJSON()
     screenCache = @localStorage['logScreens']
     screens = if screenCache then JSON.parse(screenCache) else [{name: 'Screen1'}]
@@ -227,6 +245,7 @@ class WebClient
           message: message
 
   _ping: (msg) =>
+    return if !msg
     {stream, node} = msg
     stream = @logStreams.get stream
     node = @logNodes.get node
@@ -485,26 +504,97 @@ class ObjectItemControls extends backbone.View
 
 class LogScreensPanel extends backbone.View
   template: _.template templates.logScreensPanel
+  templateTabButton: _.template templates.logScreensTabButton
   id: 'log_screens'
+  cnt: 1
+  activate: null
   initialize: (opts) ->
     {@logScreens, @webClient} = opts
     @listenTo @logScreens, 'add', @_addLogScreen
-    @listenTo @logScreens, 'add remove', @_resize
+    @listenTo @logScreens, 'add', @_resize
+    @listenTo @logScreens, 'remove', @_remove
     $(window).resize @_resize if window?
     @statsView = new LogStatsView stats: @webClient.stats
+    @logScreens.on 'updateName', =>
+      console.log this
 
   events:
     "click #new_screen_button": "_newScreen"
+    "click #rename_screen_button": "_renameScreen"
+    "click #tab_screen label": "_changeScreen"
+    "keyup #rename_input": "_updateScreenName"
+    "blur #rename_input": "_closeRenameInput"
+    "change #log_options input": "_toggleLogMessage"
 
   _newScreen: (e) ->
-    @logScreens.add new @logScreens.model name: 'Screen1'
+    self = this
+    @logScreens.add new @logScreens.model name: 'Screen-'+self.cnt
     false
 
+  _renameScreen: (e) ->
+    cid = @$el.find('.tab-buttons input:checked + label').data('cid')
+    logScreen = _.find @logScreens.models, (model) => model.cid == cid
+    $(e.currentTarget).next().show().val(logScreen.get('name')).select()
+    false
+
+  _updateScreenName: _.debounce (e) ->
+    if e.keyCode == 13
+      @$el.find('#rename_input').hide()
+    else
+      newName = $(e.currentTarget).val()
+      cid = @$el.find('.tab-buttons input:checked + label').data('cid')
+      logScreen = _.find @logScreens.models, (model) => model.cid == cid
+      @$el.find('.tab-buttons input:checked + label').text newName
+      logScreen.updateName newName
+    false
+  , 300
+
+  _closeRenameInput: (e) ->
+    @$el.find('#rename_input').hide()
+    false
+
+  _changeScreen: (e) ->
+    cid = $(e.currentTarget).data('cid')
+    logScreen = _.find @logScreens.models, (model) => model.cid == cid
+    @_updateToggleLogOptions logScreen
+    @$el.find('.log_screen').removeClass('active')
+    @$el.find('.log_screen.'+cid).addClass('active')
+    @$el.find('#rename_input').hide()
+    # false
+
+  _toggleLogMessage: (e) ->
+    cid = @$el.find('.tab-buttons input:checked + label').data('cid')
+    logScreen = _.find @logScreens.models, (model) => model.cid == cid
+    # logScreen.attributes.show[e.target.name] = !logScreen.attributes.show[e.target.name]
+    # logScreen.attributes.show[e.target.name] = !logScreen.attributes.show[e.target.name]
+    logScreen.get('show')[e.target.name] = !logScreen.get('show')[e.target.name]
+    @$el.find('.log_screen.active').toggleClass('hide-'+e.target.name)
+    logScreen.trigger 'updateLogOptions', e
+    # false
+
+  _updateToggleLogOptions: (screen) ->
+    show = screen.get 'show'
+    @$el.find('#log_options [name="stream"]').prop('checked', show.stream)
+    @$el.find('#log_options [name="node"]').prop('checked', show.node)
+    @$el.find('#log_options [name="level"]').prop('checked', show.level)
+    @$el.find('#log_options [name="autoscroll"]').prop('checked', show.autoscroll)
+    @$el.find('.log_screen.'+screen.cid).addClass('hide-stream') if !show.stream
+    @$el.find('.log_screen.'+screen.cid).addClass('hide-node') if !show.node
+    @$el.find('.log_screen.'+screen.cid).addClass('hide-level') if !show.level
+
   _addLogScreen: (screen) =>
+    @cnt++
+    screen.set 'show', screen.get('show') || { stream: true, node: true, level: true, autoscroll: true }
+    if @activate == null
+      screen.checked = 'checked'
+      @activate = screen.cid
+    @$el.find("div.status_bar .tab-buttons").append @templateTabButton {cid: screen.cid, name: screen.get('name'), checked: screen.checked}
     view = new LogScreenView
       logScreens: @logScreens
       logScreen: screen
     @$el.find("div.log_screens").append view.render().el
+    if screen.checked == 'checked'
+      @_updateToggleLogOptions screen
     false
 
   _resize: =>
@@ -513,7 +603,12 @@ class LogScreensPanel extends backbone.View
     if lscreens.length
       height = $(window).height() - @$el.find("div.status_bar").height() - 10
       @$el.find(".log_screen .messages").each ->
-        $(@).height (height/lscreens.length) - 12
+        # $(@).height (height/lscreens.length) - 12
+        $(@).height (height) - 12
+
+  _remove: =>
+    @$el.find('.tab-buttons input:checked + label').remove().prev().remove()
+    @$el.find('.tab-buttons input:first + label').trigger('click')
 
   render: ->
     @$el.html @template()
@@ -535,6 +630,7 @@ class LogScreenView extends backbone.View
   events:
     "click .controls .close": "_close"
     "click .controls .clear": "_clear"
+    # "click .controls .clear-filter": "_clear_filter"
 
   _close: =>
     @logScreen.logMessages.reset()
@@ -544,6 +640,14 @@ class LogScreenView extends backbone.View
   _clear: =>
     @logScreen.logMessages.reset()
     @_renderMessages()
+    false
+
+  _clear_filter: (e) =>
+    $ e.currentTarget
+       .next()
+       .find 'input'
+       .val ''
+    @_filter ''
     false
 
   __filter: (e) =>
@@ -559,22 +663,39 @@ class LogScreenView extends backbone.View
 
   _addNewLogMessage: (lmessage) =>
     @logScreen.logMessages.add lmessage
+    @_removeOldestLog() if @logScreen.logMessages.isOverflow
     @_renderNewLog lmessage
+
+  _removeOldestLog: () =>
+    @msgs.find('div').first().remove()
 
   _recordScroll: (e) =>
     msgs = @$el.find '.messages'
     @forceScroll = (msgs.height() + msgs[0].scrollTop) is msgs[0].scrollHeight
 
+
   _renderNewLog: (lmessage) =>
     _msg = lmessage.get 'message'
-    msg = lmessage.render_message()
+    level = lmessage.get 'level'
+    # msg = lmessage.render_message()
+    msg = lmessage.get 'message'
+    data = msg.match /\n\{[\s\S]*\}[\s]*$/g
+    msg = msg.replace /\n\{[\s\S]*\}[\s]*$/g, ''
+
     if @filter
-      msg = if _msg.match @filter then msg.replace @filter, '<span class="highlight">$1</span>' else null
+      if _msg.match @filter
+          msg = msg.replace @filter, '<span class="highlight">$1</span>'
+      else if level.match @filter
+          msg = msg
+      else msg = null
+      # msg = lmessage.render_message()
     if msg
       @msgs.append @logTemplate
         lmessage: lmessage
+        level: level
+        data: data
         msg: msg
-      @$el.find('.messages')[0].scrollTop = @$el.find('.messages')[0].scrollHeight if @forceScroll
+      @$el.find('.messages')[0].scrollTop = @$el.find('.messages')[0].scrollHeight if @logScreen.get('show').autoscroll
 
   _renderMessages: =>
     @msgs.html ''
@@ -585,6 +706,10 @@ class LogScreenView extends backbone.View
       logScreens: @logScreens
     @$el.find('.messages').scroll @_recordScroll
     @$el.find('.controls .filter input').keyup @__filter
+    @$el.find('.controls .clear-filter').click @_clear_filter
+    logScreen = @logScreens.models[@logScreens.length-1]
+    @$el.addClass logScreen.cid
+    @$el.addClass 'active' if logScreen.checked
     @msgs = @$el.find '.msg'
     @_renderMessages()
     @

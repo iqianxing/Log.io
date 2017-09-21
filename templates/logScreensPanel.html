@@ -1,6 +1,38 @@
-<div class='log_screens'></div>
+<div class='log_screens tabs'></div>
 <div class='status_bar'>
+  <div class="tabbed" id="tab_screen">
+    <div class="tab-buttons">
+    </div>
+  </div>
   <a href="#" class='button' id="new_screen_button">New Screen</a>
+  <a href="#" class='button' id="rename_screen_button">Rename Screen</a>
+  <input id="rename_input" placeholder="" type="text">
+
+  <div id="log_options">
+    <label class="switch tooltip">
+      <input type="checkbox" checked name="stream">
+      <span class="slider round"></span>
+      <span class="tooltiptext">Show Stream <br />Name</span>
+    </label>
+
+    <label class="switch tooltip">
+      <input type="checkbox" checked name="node">
+      <span class="slider round"></span>
+      <span class="tooltiptext">Show Node <br />Name</span>
+    </label>
+
+    <label class="switch tooltip">
+      <input type="checkbox" checked name="level">
+      <span class="slider round"></span>
+      <span class="tooltiptext">Show Level</span>
+    </label>
+
+    <label class="switch tooltip">
+      <input type="checkbox" checked name="autoscroll">
+      <span class="slider round"></span>
+      <span class="tooltiptext">Auto Scroll</span>
+    </label>
+  </div>
   <div class='stats'></div>
   <div style='clear: both;'</div>
 </div>

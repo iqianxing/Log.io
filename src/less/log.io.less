@@ -2,6 +2,11 @@
  * Log.io Web Client styles
  */
 
+ // font
+ // @import url(http://fonts.googleapis.com/earlyaccess/nanumgothiccoding.css);
+ @import url(https://cdn.jsdelivr.net/gh/Joungkyun/font-d2coding@1.2.1/d2coding.css);
+
+
 // Defaults
 
 @controlWidth: 250px;
@@ -42,15 +47,15 @@
 	    width: 10px;
 	    background-color: #333;
 	}
-	 
+
 	&::-webkit-scrollbar-track {
-	    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+	    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
 	    border-radius: 8px;
 	}
-	 
+
 	&::-webkit-scrollbar-thumb {
 	    border-radius: 8px;
-	    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+	    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
 	}
 }
 
@@ -97,7 +102,7 @@ body {
 			color: #eee;
 			background-color: #333;
 			background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#222), to(#333));
-			background-image: -webkit-linear-gradient(top, #222, #333); 
+			background-image: -webkit-linear-gradient(top, #222, #333);
 			background-image: -moz-linear-gradient(top, #222, #333);
 			background-image: -ms-linear-gradient(top, #222, #333);
 			background-image: -o-linear-gradient(top, #222, #333);
@@ -124,7 +129,7 @@ body {
 				color: #eee;
 
 				background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#111), to(#000));
-				background-image: -webkit-linear-gradient(top, #111, #000); 
+				background-image: -webkit-linear-gradient(top, #111, #000);
 				background-image: -moz-linear-gradient(top, #111, #000);
 				background-image: -ms-linear-gradient(top, #111, #000);
 				background-image: -o-linear-gradient(top, #111, #000);
@@ -217,9 +222,54 @@ body {
 	margin-left: @controlWidth;
 	background-color: #000;
 
+
+	.tabbed {
+    height: 31px;
+		padding: 0 10px 10px 10px;
+
+    .tab-buttons > input {
+      display: none;
+    }
+    .tab-buttons > label {
+      float: left;
+      padding: 5px 20px;
+      margin-right: 5px;
+      cursor: pointer;
+      transition: background-color .3s;
+    }
+    .tab-buttons > a:hover,
+    .tab-buttons > label:hover,
+    .tab-buttons > input:checked + label {
+      background: #aaa;
+			color: black;
+    }
+  }
+
+	.tabs > div {
+
+	}
+
+
+
+
 	div.log_screen {
 		margin: 10px;
 		position: relative;
+    display: none;
+
+    &.active {
+      display: block;
+
+      &.hide-stream .stream{
+        display: none;
+      }
+      &.hide-node .node{
+        display: none;
+      }
+      &.hide-level .level{
+        display: none !important;
+      }
+    }
 
 		&:hover div.controls {
 			display: block;
@@ -264,7 +314,7 @@ body {
 		}
 
 		div.messages {
-			
+
 			background-color: #111;
 			border: 1px solid #333;
 			word-wrap: break-word;
@@ -272,14 +322,47 @@ body {
 
 			.msg {
 				margin: 10px;
-				color: #0c0;
+				// color: #0c0;
+				color: #aaa;
 
 				p, p * {
-					font-size: 12px;
-					line-height: 16px;
+					font-size: 16px;
+					line-height: 18px;
 					font-weight: 400;
-					font-family: 'Inconsolata', Courier, sans-serif;
+					font-family: 'D2 coding', 'Inconsolata', Courier, sans-serif;
 				}
+
+        .level {
+          min-width: 100px;
+          text-align: center;
+          display: inline-block;
+        }
+
+				.debug { color: @color2; }
+				.info { color: #86af49; }
+				.warn { color: #f2ae72; }
+				.error { color: #c94c4c; }
+        .time { color: #aaa; }
+        .line { color: @color5; }
+
+        .status200 { color: @color5; }
+				.status300 { color: @color1; }
+        .status400 { color: @color3; }
+        .status500 { color: @color7; }
+
+        .responseTime0 { color:   #48c9b0  }
+        .responseTime100 { color:  #45b39d  }
+        .responseTime200 { color:   #5dade2  }
+        .responseTime300 { color:   #5499c7  }
+        .responseTime400 { color:   #eb984e  }
+        .responseTime500 { color:   #dc7633  }
+				.responseTime600 { color:   #cd6155  }
+        .responseTime700 { color:   #e74c3c  }
+
+        pre {
+          display: inherit;
+          margin-left: 250px;
+        }
 
 				.color1 { color: @color1; }
 				.color2 { color: @color2; }
@@ -307,6 +390,7 @@ body {
 				display: block;
 			}
 			span.highlight {
+        display: inline-table;
 				background-color: #0e0;
 				color: #000;
 			}
@@ -330,6 +414,122 @@ body {
 			display: block;
 			float: left;
 		}
+
+    input#rename_input {
+      display: none;
+      border: none;
+      padding: 6px;
+      margin: 0 10px 10px;
+      float: left;
+      width: 222px;
+      font-size: 12px;
+      border: 1px solid #ddd;
+      background-color: #111;
+      color: #ccc;
+
+      &.active {
+        display: block;
+      }
+    }
+
+    div#log_options {
+      display: inline-block;
+
+      .tooltip {
+				.tooltiptext {
+	          visibility: hidden;
+	          width: 120px;
+	          background-color: #ddd;
+	          color: #333;
+	          text-align: center;
+	          border-radius: 6px;
+	          padding: 5px 0;
+
+	          /* Position the tooltip */
+	          position: absolute;
+	          z-index: 1;
+	          bottom: 140%;
+	          left: 50%;
+	          margin-left: -60px;
+	      }
+				.tooltiptext::after {
+				    content: "";
+				    position: absolute;
+				    top: 100%;
+				    left: 50%;
+				    margin-left: -5px;
+				    border-width: 5px;
+				    border-style: solid;
+				    border-color: #ddd transparent transparent transparent;
+				}
+				&:hover .tooltiptext {
+	          visibility: visible;
+	      }
+			}
+
+
+
+      .switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        // height: 34px;
+        height: 30px;
+      }
+
+      .switch input {display:none;}
+
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #444;
+        -webkit-transition: .4s;
+        transition: .4s;
+      }
+
+      .slider:before {
+        position: absolute;
+        content: "";
+        // height: 26px;
+        height: 22px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        -webkit-transition: .4s;
+        transition: .4s;
+      }
+
+      input:checked + .slider {
+        background-color: #aaa;
+      }
+
+      input:focus + .slider {
+        box-shadow: 0 0 1px #aaa;
+      }
+
+      input:checked + .slider:before {
+        -webkit-transform: translateX(26px);
+        -ms-transform: translateX(26px);
+        transform: translateX(26px);
+      }
+
+      /* Rounded sliders */
+      .slider.round {
+        // border-radius: 34px;
+        border-radius: 9px;
+      }
+
+      .slider.round:before {
+        // border-radius: 50%;
+        border-radius: 30%;
+      }
+
+    }
 
 		.stats {
 			float: right;

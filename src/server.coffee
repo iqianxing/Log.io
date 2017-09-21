@@ -80,7 +80,7 @@ inbound TCP messages, and emits events.
 ###
 class LogServer extends events.EventEmitter
   constructor: (config={}) ->
-    {@host, @port} = config
+    {@host, @port, @ssl} = config
     @_log = config.logging ? winston
     @_delimiter = config.delimiter ? '\r\n'
     @logNodes = {}

@@ -1,6 +1,7 @@
 /*
  * Log.io Web Client styles
  */
+@import url(https://cdn.jsdelivr.net/gh/Joungkyun/font-d2coding@1.2.1/d2coding.css);
 .floatl {
   float: left;
 }
@@ -210,9 +211,42 @@ body {
   margin-left: 250px;
   background-color: #000;
 }
+#log_screens .tabbed {
+  height: 31px;
+  padding: 0 10px 10px 10px;
+}
+#log_screens .tabbed .tab-buttons > input {
+  display: none;
+}
+#log_screens .tabbed .tab-buttons > label {
+  float: left;
+  padding: 5px 20px;
+  margin-right: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+#log_screens .tabbed .tab-buttons > a:hover,
+#log_screens .tabbed .tab-buttons > label:hover,
+#log_screens .tabbed .tab-buttons > input:checked + label {
+  background: #aaa;
+  color: black;
+}
 #log_screens div.log_screen {
   margin: 10px;
   position: relative;
+  display: none;
+}
+#log_screens div.log_screen.active {
+  display: block;
+}
+#log_screens div.log_screen.active.hide-stream .stream {
+  display: none;
+}
+#log_screens div.log_screen.active.hide-node .node {
+  display: none;
+}
+#log_screens div.log_screen.active.hide-level .level {
+  display: none !important;
 }
 #log_screens div.log_screen:hover div.controls {
   display: block;
@@ -271,14 +305,77 @@ body {
 }
 #log_screens div.log_screen div.messages .msg {
   margin: 10px;
-  color: #0c0;
+  color: #aaa;
 }
 #log_screens div.log_screen div.messages .msg p,
 #log_screens div.log_screen div.messages .msg p * {
-  font-size: 12px;
-  line-height: 16px;
+  font-size: 16px;
+  line-height: 18px;
   font-weight: 400;
-  font-family: 'Inconsolata', Courier, sans-serif;
+  font-family: 'D2 coding', 'Inconsolata', Courier, sans-serif;
+}
+#log_screens div.log_screen div.messages .msg .level {
+  min-width: 100px;
+  text-align: center;
+  display: inline-block;
+}
+#log_screens div.log_screen div.messages .msg .debug {
+  color: #aec7e8;
+}
+#log_screens div.log_screen div.messages .msg .info {
+  color: #86af49;
+}
+#log_screens div.log_screen div.messages .msg .warn {
+  color: #f2ae72;
+}
+#log_screens div.log_screen div.messages .msg .error {
+  color: #c94c4c;
+}
+#log_screens div.log_screen div.messages .msg .time {
+  color: #aaa;
+}
+#log_screens div.log_screen div.messages .msg .line {
+  color: #2ca02c;
+}
+#log_screens div.log_screen div.messages .msg .status200 {
+  color: #2ca02c;
+}
+#log_screens div.log_screen div.messages .msg .status300 {
+  color: #1f77b4;
+}
+#log_screens div.log_screen div.messages .msg .status400 {
+  color: #ff7f0e;
+}
+#log_screens div.log_screen div.messages .msg .status500 {
+  color: #d62728;
+}
+#log_screens div.log_screen div.messages .msg .responseTime0 {
+  color: #48c9b0;
+}
+#log_screens div.log_screen div.messages .msg .responseTime100 {
+  color: #45b39d;
+}
+#log_screens div.log_screen div.messages .msg .responseTime200 {
+  color: #5dade2;
+}
+#log_screens div.log_screen div.messages .msg .responseTime300 {
+  color: #5499c7;
+}
+#log_screens div.log_screen div.messages .msg .responseTime400 {
+  color: #eb984e;
+}
+#log_screens div.log_screen div.messages .msg .responseTime500 {
+  color: #dc7633;
+}
+#log_screens div.log_screen div.messages .msg .responseTime600 {
+  color: #cd6155;
+}
+#log_screens div.log_screen div.messages .msg .responseTime700 {
+  color: #e74c3c;
+}
+#log_screens div.log_screen div.messages .msg pre {
+  display: inherit;
+  margin-left: 250px;
 }
 #log_screens div.log_screen div.messages .msg .color1 {
   color: #1f77b4;
@@ -344,6 +441,7 @@ body {
   display: block;
 }
 #log_screens div.log_screen div.messages span.highlight {
+  display: inline-table;
   background-color: #0e0;
   color: #000;
 }
@@ -361,6 +459,101 @@ body {
   margin: 0px 10px 10px;
   display: block;
   float: left;
+}
+#log_screens .status_bar input#rename_input {
+  display: none;
+  border: none;
+  padding: 6px;
+  margin: 0 10px 10px;
+  float: left;
+  width: 222px;
+  font-size: 12px;
+  border: 1px solid #ddd;
+  background-color: #111;
+  color: #ccc;
+}
+#log_screens .status_bar input#rename_input.active {
+  display: block;
+}
+#log_screens .status_bar div#log_options {
+  display: inline-block;
+  /* Rounded sliders */
+}
+#log_screens .status_bar div#log_options .tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: #ddd;
+  color: #333;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  bottom: 140%;
+  left: 50%;
+  margin-left: -60px;
+}
+#log_screens .status_bar div#log_options .tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #ddd transparent transparent transparent;
+}
+#log_screens .status_bar div#log_options .tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+#log_screens .status_bar div#log_options .switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 30px;
+}
+#log_screens .status_bar div#log_options .switch input {
+  display: none;
+}
+#log_screens .status_bar div#log_options .slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #444;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+#log_screens .status_bar div#log_options .slider:before {
+  position: absolute;
+  content: "";
+  height: 22px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+#log_screens .status_bar div#log_options input:checked + .slider {
+  background-color: #aaa;
+}
+#log_screens .status_bar div#log_options input:focus + .slider {
+  box-shadow: 0 0 1px #aaa;
+}
+#log_screens .status_bar div#log_options input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+#log_screens .status_bar div#log_options .slider.round {
+  border-radius: 9px;
+}
+#log_screens .status_bar div#log_options .slider.round:before {
+  border-radius: 30%;
 }
 #log_screens .status_bar .stats {
   float: right;
