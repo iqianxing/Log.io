@@ -22,6 +22,8 @@ backbone.$ = $
 io = require 'socket.io-client'
 _ = require 'underscore'
 templates = require './templates'
+Convert = require 'ansi-to-html'
+convert = new Convert()
 
 # Cap LogMessages collection size
 MESSAGE_CAP = 5000
@@ -694,7 +696,8 @@ class LogScreenView extends backbone.View
         lmessage: lmessage
         level: level
         data: data
-        msg: msg
+        # msg: msg
+        msg: convert.toHtml(msg)
       @$el.find('.messages')[0].scrollTop = @$el.find('.messages')[0].scrollHeight if @logScreen.get('show').autoscroll
 
   _renderMessages: =>

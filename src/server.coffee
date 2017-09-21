@@ -29,6 +29,7 @@ webServer.run()
 
 fs = require 'fs'
 net = require 'net'
+tls = require 'tls'
 http = require 'http'
 https = require 'https'
 io = require 'socket.io'
@@ -85,15 +86,38 @@ class LogServer extends events.EventEmitter
     @_delimiter = config.delimiter ? '\r\n'
     @logNodes = {}
     @logStreams = {}
-
+    @_createServer config
   run: ->
-    # Create TCP listener socket
-    @listener = net.createServer (socket) =>
-      socket._buffer = ''
-      socket.on 'data', (data) => @_receive data, socket
-      socket.on 'error', => @_tearDown socket
-      socket.on 'close', => @_tearDown socket
-    @listener.listen @port, @host
+    # # Create TCP listener socket
+    # @listener = net.createServer (socket) =>
+    #   socket._buffer = ''
+    #   socket.on 'data', (data) => @_receive data, socket
+    #   socket.on 'error', => @_tearDown socket
+    #   socket.on 'close', => @_tearDown socket
+    # @listener.listen @port, @host
+
+  _createServer: (config) ->
+    if config.ssl
+      options = {
+        key: fs.readFileSync config.ssl.key
+        cert: fs.readFileSync config.ssl.cert,
+      }
+      @listener = tls.createServer options, (socket) =>
+        socket._buffer = ''
+        socket.on 'data', (data) => @_receive data, socket
+        socket.on 'error', => @_tearDown socket
+        socket.on 'close', => @_tearDown socket
+      @listener.listen @port, @host
+
+    else
+      # Create TCP listener socket
+      @listener = net.createServer (socket) =>
+        socket._buffer = ''
+        socket.on 'data', (data) => @_receive data, socket
+        socket.on 'error', => @_tearDown socket
+        socket.on 'close', => @_tearDown socket
+      @listener.listen @port, @host
+
 
   _tearDown: (socket) ->
     # Destroy a client socket

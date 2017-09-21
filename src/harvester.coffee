@@ -27,6 +27,7 @@ harvester.run()
 
 fs = require 'fs'
 net = require 'net'
+tls = require 'tls'
 events = require 'events'
 winston = require 'winston'
 
@@ -94,20 +95,26 @@ class LogHarvester
         @_sendLog stream, msg if @_connected
 
   _connect: ->
+    console.log @server
     # Create TCP socket
-    @socket = new net.Socket
+    @_log.info "Connecting to server..."
+    options = {
+      port: @server.port,
+      host: @server.host,
+      rejectUnauthorized: false
+    }
+    @socket = (if @server.ssl then tls else net).connect options, =>
+      @_connected = true
+      @_announce()
+
     @socket.on 'error', (error) =>
       @_connected = false
       @_log.error "Unable to connect server, trying again..."
       setTimeout (=> @_connect()), 2000
-    @_log.info "Connecting to server..."
-    @socket.connect @server.port, @server.host, =>
-      @_connected = true
-      @_announce()
 
   _sendLog: (stream, msg) ->
     @_log.debug "Sending log: (#{stream.name}) #{msg}"
-    @_send '+log', stream.name, @nodeName, 'info', msg 
+    @_send '+log', stream.name, @nodeName, 'info', msg
 
   _announce: ->
     snames = (l.name for l in @logStreams).join ","
