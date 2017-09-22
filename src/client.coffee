@@ -321,13 +321,15 @@ class LogControlPanel extends backbone.View
       logScreens: @logScreens
       getPair: (object, item) -> [object, item]
       id: 'log_control_streams'
+      attributes:
+        style: 'display: none'
     @nodes = new ObjectControls
       objects: @logNodes
       logScreens: @logScreens
       getPair: (object, item) -> [item, object]
       id: 'log_control_nodes'
-      attributes:
-        style: 'display: none'
+      # attributes:
+      #   style: 'display: none'
 
   events:
     "click a.select_mode": "_toggleMode"
@@ -562,17 +564,15 @@ class LogScreensPanel extends backbone.View
     @$el.find('.log_screen').removeClass('active')
     @$el.find('.log_screen.'+cid).addClass('active')
     @$el.find('#rename_input').hide()
-    # false
+    $logScreen = @$el.find('.log_screen.active .messages')[0]
+    $logScreen.scrollTop = $logScreen.scrollHeight if logScreen.get('show').autoscroll
 
   _toggleLogMessage: (e) ->
     cid = @$el.find('.tab-buttons input:checked + label').data('cid')
     logScreen = _.find @logScreens.models, (model) => model.cid == cid
-    # logScreen.attributes.show[e.target.name] = !logScreen.attributes.show[e.target.name]
-    # logScreen.attributes.show[e.target.name] = !logScreen.attributes.show[e.target.name]
     logScreen.get('show')[e.target.name] = !logScreen.get('show')[e.target.name]
     @$el.find('.log_screen.active').toggleClass('hide-'+e.target.name)
     logScreen.trigger 'updateLogOptions', e
-    # false
 
   _updateToggleLogOptions: (screen) ->
     show = screen.get 'show'
