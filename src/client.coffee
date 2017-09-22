@@ -623,6 +623,7 @@ class LogScreenView extends backbone.View
   template: _.template templates.logScreenView
   logTemplate: _.template templates.logMessage
   initialize: (opts) ->
+    console.log @$el
     {@logScreen, @logScreens} = opts
     @listenTo @logScreen, 'destroy', => @remove()
     @listenTo @logScreen, 'new_log', @_addNewLogMessage
@@ -632,6 +633,7 @@ class LogScreenView extends backbone.View
   events:
     "click .controls .close": "_close"
     "click .controls .clear": "_clear"
+    "click pre.data": "_toggleMeta"
     # "click .controls .clear-filter": "_clear_filter"
 
   _close: =>
@@ -642,6 +644,12 @@ class LogScreenView extends backbone.View
   _clear: =>
     @logScreen.logMessages.reset()
     @_renderMessages()
+    false
+
+  _toggleMeta: (e)=>
+    console.log e.currentTarget
+    $ e.currentTarget
+       .toggleClass 'wrap'
     false
 
   _clear_filter: (e) =>

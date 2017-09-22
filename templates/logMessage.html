@@ -3,5 +3,7 @@
   <span class='node color<%= lmessage.get('node').color %>'><%= lmessage.get('node').id %></span>
   <span class='level <%= level %>'><%= level %> </span>
   <span class='message <%= level %>'><%= msg %></span>
-  <pre class='data <%= level %>'><%= data %></pre>
+  <%  if (data) { %>
+    <pre class='data <%= level %> wrap'><%= data %></pre>
+  <% } %>
 </div>
