@@ -623,7 +623,6 @@ class LogScreenView extends backbone.View
   template: _.template templates.logScreenView
   logTemplate: _.template templates.logMessage
   initialize: (opts) ->
-    console.log @$el
     {@logScreen, @logScreens} = opts
     @listenTo @logScreen, 'destroy', => @remove()
     @listenTo @logScreen, 'new_log', @_addNewLogMessage
@@ -647,7 +646,6 @@ class LogScreenView extends backbone.View
     false
 
   _toggleMeta: (e)=>
-    console.log e.currentTarget
     $ e.currentTarget
        .toggleClass 'wrap'
     false
