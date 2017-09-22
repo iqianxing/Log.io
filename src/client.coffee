@@ -681,8 +681,8 @@ class LogScreenView extends backbone.View
     level = lmessage.get 'level'
     # msg = lmessage.render_message()
     msg = lmessage.get 'message'
-    data = msg.match /\n\{[\s\S]*\}[\s]*$/g
-    msg = msg.replace /\n\{[\s\S]*\}[\s]*$/g, ''
+    data = msg.match /\n(\[|\{)[\s\S]*(\]|\})[\s]*$/g
+    msg = msg.replace /\n(\[|\{)[\s\S]*(\]|\})[\s]*$/g, ''
 
     if @filter
       if _msg.match @filter
