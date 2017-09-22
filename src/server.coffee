@@ -101,6 +101,7 @@ class LogServer extends events.EventEmitter
       options = {
         key: fs.readFileSync config.ssl.key
         cert: fs.readFileSync config.ssl.cert,
+        rejectUnauthorized: false
       }
       @listener = tls.createServer options, (socket) =>
         socket._buffer = ''
