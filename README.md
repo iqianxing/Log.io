@@ -34,7 +34,7 @@ The purpose is to display the server / front log on the screen alone.
 5) Browse to https://localhost:28778
 
 ## Install Server & Harvester with Docker
-
+https://github.com/prugel/logio
 
 ## Server TCP Interface
 
