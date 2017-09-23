@@ -519,8 +519,8 @@ class LogScreensPanel extends backbone.View
     @listenTo @logScreens, 'remove', @_remove
     $(window).resize @_resize if window?
     @statsView = new LogStatsView stats: @webClient.stats
-    @logScreens.on 'updateName', =>
-      console.log this
+    # @logScreens.on 'updateName', =>
+    #   console.log this
 
   events:
     "click #new_screen_button": "_newScreen"

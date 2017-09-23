@@ -3,19 +3,21 @@ Log.io - Real-time log monitoring in your browser
 
 Powered by [node.js](http://nodejs.org) + [socket.io](http://socket.io)
 
-## How does it work?
+## Fork from [Log.io](https://github.com/NarrativeScience/Log.io)
 
-*Harvesters* watch log files for changes, send new log messages to the *server* via TCP, which broadcasts to *web clients* via socket.io.
+![log screen](./logio.gif)
 
-Log streams are defined by mapping file paths to a stream name in harvester configuration.
 
-Users browse streams and nodes in the web UI, and activate (stream, node) pairs to view and search log messages in screen widgets.
+## What has changed?
+
+The purpose is to display the server / front log on the screen alone.
 
 ## Install Server & Harvester
+! 기본 https 적용
 
 1) Install via npm
 
-    npm install -g log.io --user "ubuntu"
+    npm install -g https://github.com/prugel/logio.git --user "ubuntu"
 
 2) Run server
 
@@ -29,27 +31,132 @@ Users browse streams and nodes in the web UI, and activate (stream, node) pairs 
 
     log.io-harvester
 
-5) Browse to http://localhost:28778
+5) Browse to https://localhost:28778
+
+## Install Server & Harvester with Docker
+
 
 ## Server TCP Interface
 
-Harvesters connect to the server via TCP, and write properly formatted strings to the socket.  Third party harvesters can send messages to the server using the following commands:
+Send a log message, from web server to logio log_server
+``` javascript
+const options = {
+  port: '0.0.0.0',
+  host: 28777,
+  rejectUnauthorized: false
+};
 
-Send a log message
+(server.ssl ? tls : net).connect(options, function(socket) {
+  const message = 'hello world';
+  send('+log', 'server', 'AwesomeWeb', 'info', message);
 
-    +log|my_stream|my_node|info|this is log message\r\n
 
-Register a new node
 
-    +node|my_node\r\n
+  let message2 = 'another message';
+  const data = [{
+    hello: 'world',
+    step: 1
+  }, {
+    name: 'james',
+    step: 2
+  }];
+  data.forEach(function(meta) {
+    message2 += '\n'+JSON.stringify(meta, null, 4);
+  });
+  send('+log', 'server', 'AwesomeWeb', 'debug', message2);
 
-Register a new node, with stream associations
 
-    +node|my_node|my_stream1,my_stream2\r\n
+  function send() {
+    socket.write([].slice.call(arguments).join('|') + '\r\n');
+  }
 
-Remove a node
+});
+```
 
-    -node|my_node\r\n
+``` javascript
+const statusCode = Math.floor(data.statusCode/100)*100;
+const responseTime = Math.min(Math.floor(data.responseTime/100)*100, 700);
+const arr = [
+  moment(data.timestamp).format('YYYY MM DD A hh:mm:ss'),
+  `<span class="responseTime${responseTime}">(${data.responseTime}ms)</span>`,
+  `${data.pid}:`,
+  `<span class="status${statusCode}">${data.method}</span>`,
+  data.path,
+  data.query,
+  `<span class="status${statusCode}">${data.statusCode}</span>`,
+];
+this.send('+log', this.logio.stream, this.logio.node, '', arr.join('&nbsp;&nbsp;&nbsp;'));
+```
+
+## Browser TCP Interface
+
+Send a log message, from web page to logio log_server
+- ws: work fine
+- wss: wss can not be used with a self signed certificate
+- wss: web page -> web server -> logio log_server
+``` javascript
+  var ws = new WebSocket("ws://0.0.0.0:28777");
+
+  send('+log', 'front', 'AwesomeWeb', 'info', message);
+
+  send('+log', 'front', 'AwesomeWeb', 'debug', message2);
+
+  function send() {
+    ws.send([].slice.call(arguments).join('|') + '\r\n');
+  }
+```
+
+## Color table
+! Allow html tags in messages.
+! ansi to html apply
+```
+\x1b[30mblack\x1b[37mwhite
+
+<span style="color:#000">black<span style="color:#AAA">white</span></span>
+```
+1. response time
+
+  class | color
+  ------------ | -------------
+  responseTime0 | <span style="color: #48c9b0">#48c9b0</span>
+  responseTime100 | <span style="color: #45b39d">#45b39d</span>
+  responseTime200 | <span style="color: #5dade2">#5dade2</span>
+  responseTime300 | <span style="color: #5499c7">#5499c7</span>
+  responseTime400 | <span style="color: #eb984e">#eb984e</span>
+  responseTime500 | <span style="color: #dc7633">#dc7633</span>
+  responseTime600 | <span style="color: #cd6155">#cd6155</span>
+  responseTime700 ~ | <span style="color: #e74c3c">#e74c3c</span>
+2. status code
+
+  class | color
+  ------- | ------
+  status200 | <span style="color: #2ca02c">#2ca02c</span>
+  status300 | <span style="color: #1f77b4">#1f77b4</span>
+  status400 | <span style="color: #ff7f0e">#ff7f0e</span>
+  status500 | <span style="color: #d62728">#d62728</span>
+3. log level message
+
+  class | color
+  ------- | ------
+  debug | <span style="color: #aec7e8">#aec7e8</span>
+  info | <span style="color: #86af49">#86af49</span>
+  warn | <span style="color: #f2ae72">#f2ae72</span>
+  error | <span style="color: #c94c4c">#c94c4c</span>
+
+4. line
+
+  class | color
+  ------- | ------
+  line | <span style="color: #2ca02c">#2ca02c</span>
+
+5. time
+
+  class | color
+  ------- | ------
+  time | <span style="color: #aaa">#aaa</span>
+
+## Virtual scroll
+... not
 
 ## Credits
 
@@ -69,7 +176,7 @@ Remove a node
 
 - [jdrake](http://github.com/jdrake)
 
-## License 
+## License
 
 Copyright 2013 Narrative Science &lt;contrib@narrativescience.com&gt;
 
