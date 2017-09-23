@@ -13,7 +13,7 @@ Powered by [node.js](http://nodejs.org) + [socket.io](http://socket.io)
 The purpose is to display the server / front log on the screen alone.
 
 ## Install Server & Harvester
-! 기본 https 적용
+! Apply default https
 
 1) Install via npm
 
