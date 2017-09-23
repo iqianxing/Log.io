@@ -118,42 +118,44 @@ Send a log message, from web page to logio log_server
 
   class | color
   ------------ | -------------
-  responseTime0 | <span style="color: #48c9b0">#48c9b0</span>
-  responseTime100 | <span style="color: #45b39d">#45b39d</span>
-  responseTime200 | <span style="color: #5dade2">#5dade2</span>
-  responseTime300 | <span style="color: #5499c7">#5499c7</span>
-  responseTime400 | <span style="color: #eb984e">#eb984e</span>
-  responseTime500 | <span style="color: #dc7633">#dc7633</span>
-  responseTime600 | <span style="color: #cd6155">#cd6155</span>
-  responseTime700 ~ | <span style="color: #e74c3c">#e74c3c</span>
+  responseTime0 | ![#48c9b0](https://placehold.it/15/48c9b0/000000?text=+) `#48c9b0`
+  responseTime100 | ![#45b39d](https://placehold.it/15/45b39d/000000?text=+) `#45b39d`
+  responseTime200 | ![#5dade2](https://placehold.it/15/5dade2/000000?text=+) `#5dade2`
+  responseTime300 | ![#5499c7](https://placehold.it/15/5499c7/000000?text=+) `#5499c7`
+  responseTime400 | ![#eb984e](https://placehold.it/15/eb984e/000000?text=+) `#eb984e`
+  responseTime500 | ![#dc7633](https://placehold.it/15/dc7633/000000?text=+) `#dc7633`
+  responseTime600 | ![#cd6155](https://placehold.it/15/cd6155/000000?text=+) `#cd6155`
+  responseTime700 | ![#e74c3c](https://placehold.it/15/e74c3c/000000?text=+) `#e74c3c`
+
 2. status code
 
   class | color
   ------- | ------
-  status200 | <span style="color: #2ca02c">#2ca02c</span>
-  status300 | <span style="color: #1f77b4">#1f77b4</span>
-  status400 | <span style="color: #ff7f0e">#ff7f0e</span>
-  status500 | <span style="color: #d62728">#d62728</span>
+  status200 | ![#2ca02c](https://placehold.it/15/2ca02c/000000?text=+) `#2ca02c`
+  status300 | ![#1f77b4](https://placehold.it/15/1f77b4/000000?text=+) `#1f77b4`
+  status400 | ![#ff7f0e](https://placehold.it/15/ff7f0e/000000?text=+) `#ff7f0e`
+  status500 | ![#d62728](https://placehold.it/15/d62728/000000?text=+) `#d62728`
+
 3. log level message
 
   class | color
   ------- | ------
-  debug | <span style="color: #aec7e8">#aec7e8</span>
-  info | <span style="color: #86af49">#86af49</span>
-  warn | <span style="color: #f2ae72">#f2ae72</span>
-  error | <span style="color: #c94c4c">#c94c4c</span>
+  debug | ![#aec7e8](https://placehold.it/15/aec7e8/000000?text=+) `#aec7e8`
+  info | ![#86af49](https://placehold.it/15/86af49/000000?text=+) `#86af49`
+  warn | ![#f2ae72](https://placehold.it/15/f2ae72/000000?text=+) `#f2ae72`
+  error | ![#c94c4c](https://placehold.it/15/c94c4c/000000?text=+) `#c94c4c`
 
 4. line
 
   class | color
   ------- | ------
-  line | <span style="color: #2ca02c">#2ca02c</span>
+  line | ![#2ca02c](https://placehold.it/15/2ca02c/000000?text=+) `#2ca02c`
 
 5. time
 
   class | color
   ------- | ------
-  time | <span style="color: #aaa">#aaa</span>
+  time | ![#aaa](https://placehold.it/15/aaa/000000?text=+) `#aaa`
 
 ## Virtual scroll
 ... not
