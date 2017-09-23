@@ -82,7 +82,7 @@ const arr = [
   `${data.pid}:`,
   `<span class="status${statusCode}">${data.method}</span>`,
   data.path,
-  data.query,
+  JSON.stringify(data.query),
   `<span class="status${statusCode}">${data.statusCode}</span>`,
 ];
 this.send('+log', this.logio.stream, this.logio.node, '', arr.join('&nbsp;&nbsp;&nbsp;'));
