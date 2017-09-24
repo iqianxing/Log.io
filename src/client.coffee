@@ -579,14 +579,16 @@ class LogScreensPanel extends backbone.View
     @$el.find('#log_options [name="stream"]').prop('checked', show.stream)
     @$el.find('#log_options [name="node"]').prop('checked', show.node)
     @$el.find('#log_options [name="level"]').prop('checked', show.level)
+    @$el.find('#log_options [name="time"]').prop('checked', show.time)
     @$el.find('#log_options [name="autoscroll"]').prop('checked', show.autoscroll)
     @$el.find('.log_screen.'+screen.cid).addClass('hide-stream') if !show.stream
     @$el.find('.log_screen.'+screen.cid).addClass('hide-node') if !show.node
     @$el.find('.log_screen.'+screen.cid).addClass('hide-level') if !show.level
+    @$el.find('.log_screen.'+screen.cid).addClass('hide-time') if !show.time
 
   _addLogScreen: (screen) =>
     @cnt++
-    screen.set 'show', screen.get('show') || { stream: true, node: true, level: true, autoscroll: true }
+    screen.set 'show', screen.get('show') || { stream: true, node: true, level: true, time: true, autoscroll: true }
     if @activate == null
       screen.checked = 'checked'
       @activate = screen.cid
@@ -687,8 +689,8 @@ class LogScreenView extends backbone.View
     level = lmessage.get 'level'
     # msg = lmessage.render_message()
     msg = lmessage.get 'message'
-    data = msg.match /\n(\[|\{)[\s\S]*(\]|\})[\s]*$/g
-    msg = msg.replace /\n(\[|\{)[\s\S]*(\]|\})[\s]*$/g, ''
+    data = msg.match /\n[.\S\s]*/g
+    msg = msg.replace /\n[.\S\s]*/g, ''
 
     if @filter
       if _msg.match @filter

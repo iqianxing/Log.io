@@ -248,6 +248,9 @@ body {
 #log_screens div.log_screen.active.hide-level .level {
   display: none !important;
 }
+#log_screens div.log_screen.active.hide-time .time {
+  display: none;
+}
 #log_screens div.log_screen:hover div.controls {
   display: block;
 }
