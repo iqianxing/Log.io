@@ -158,7 +158,7 @@ Send a log message, from web page to logio log_server
   time | ![#aaa](https://placehold.it/15/aaa/000000?text=+) `#aaa`
 
 ## Virtual scroll
-... not
+clusterize.js Virtual scrolling applied.
 
 ## Credits
 

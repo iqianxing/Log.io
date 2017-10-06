@@ -4,7 +4,7 @@
 
  // font
  // @import url(http://fonts.googleapis.com/earlyaccess/nanumgothiccoding.css);
- @import url(https://cdn.jsdelivr.net/gh/Joungkyun/font-d2coding@1.2.1/d2coding.css);
+ // @import url(https://cdn.jsdelivr.net/gh/Joungkyun/font-d2coding@1.2.1/d2coding.css);
 
 
 // Defaults
@@ -55,6 +55,7 @@
 
 	&::-webkit-scrollbar-thumb {
 	    border-radius: 8px;
+			background-color: @color3;
 	    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
 	}
 }
@@ -260,6 +261,12 @@ body {
     &.active {
       display: block;
 
+			.stream, .node {
+				display: inline-block;
+				min-width: 80px;
+				text-align: center;
+			}
+
       &.hide-stream .stream{
         display: none;
       }
@@ -325,14 +332,13 @@ body {
 
 			.msg {
 				margin: 10px;
-				// color: #0c0;
 				color: #aaa;
 
 				p, p * {
 					font-size: 16px;
 					line-height: 18px;
 					font-weight: 400;
-					font-family: 'D2 coding', 'Inconsolata', Courier, sans-serif;
+					font-family: 'Inconsolata', Courier, sans-serif;
 				}
 
         .level {
@@ -341,12 +347,20 @@ body {
           display: inline-block;
         }
 
+				div:hover {
+          background: #272727;
+        }
+
+        .context {
+          cursor: pointer;
+        }
+
 				.debug { color: @color2; }
 				.info { color: #86af49; }
 				.warn { color: #f2ae72; }
 				.error { color: #B22222; }
         .time { color: #aaa; }
-        .line { color: @color5; }
+        .line { color: @color5; float: right; }
 
         .status200 { color: @color5; }
 				.status300 { color: @color1; }
@@ -367,16 +381,10 @@ body {
           margin-left: 250px;
           cursor: pointer;
 
-					&.wrap {
+          &.wrap {
+            height: 60px;
             overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 3; /* 라인수 */
-            -webkit-box-orient: vertical;
-            word-wrap:break-word;
-            line-height: 1.2em;
-            height: 3.6em; /* line-height 가 1.2em 이고 3라인을 자르기 때문에 height는 1.2em * 3 = 3.6em */
-					}
+          }
         }
 
 				.color1 { color: @color1; }

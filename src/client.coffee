@@ -24,6 +24,7 @@ _ = require 'underscore'
 templates = require './templates'
 Convert = require 'ansi-to-html'
 convert = new Convert()
+Clusterize = require 'clusterize.js'
 
 # Cap LogMessages collection size
 MESSAGE_CAP = 5000
@@ -565,7 +566,9 @@ class LogScreensPanel extends backbone.View
     @$el.find('.log_screen.'+cid).addClass('active')
     @$el.find('#rename_input').hide()
     $logScreen = @$el.find('.log_screen.active .messages')[0]
-    $logScreen.scrollTop = $logScreen.scrollHeight if logScreen.get('show').autoscroll
+    setTimeout ->
+      $logScreen.scrollTop = $logScreen.scrollHeight if logScreen.get('show').autoscroll
+    , 100
 
   _toggleLogMessage: (e) ->
     cid = @$el.find('.tab-buttons input:checked + label').data('cid')
@@ -624,32 +627,57 @@ class LogScreenView extends backbone.View
   className: 'log_screen'
   template: _.template templates.logScreenView
   logTemplate: _.template templates.logMessage
+  # clusterize: Clusterize
+    # scrollId: ''
+
   initialize: (opts) ->
+    self = @
+    setTimeout ->
+      scrollElem = (self.$el.find '.messages')[0]
+      contentElem = (self.$el.find '.msg')[0]
+      self.clusterize = new Clusterize {scrollElem: scrollElem, contentElem: contentElem, rows_in_block: 40, blocks_in_cluster: 10}
+      self.clusterize.updateThrottle = _.throttle self.clusterize.update, 300
+
+    , 100
     {@logScreen, @logScreens} = opts
     @listenTo @logScreen, 'destroy', => @remove()
     @listenTo @logScreen, 'new_log', @_addNewLogMessage
     @forceScroll = true
     @filter = null
+    @logRenderMessages = []
 
   events:
     "click .controls .close": "_close"
     "click .controls .clear": "_clear"
     "click pre.data": "_toggleMeta"
+    "click .message .context": "_set_filter"
     # "click .controls .clear-filter": "_clear_filter"
 
   _close: =>
     @logScreen.logMessages.reset()
     @logScreen.destroy()
+    @clusterize.destroy()
     false
 
   _clear: =>
     @logScreen.logMessages.reset()
     @_renderMessages()
+    @clusterize.clear()
     false
 
   _toggleMeta: (e)=>
     $ e.currentTarget
        .toggleClass 'wrap'
+    false
+
+  _set_filter: (e)=>
+    context = $ e.currentTarget
+                  .text()
+                  .replace /(\[|\])/g, '\\$1'
+                  .trim()
+    @$el.find 'input'
+        .val context
+        .trigger 'keyup'
     false
 
   _clear_filter: (e) =>
@@ -700,16 +728,21 @@ class LogScreenView extends backbone.View
       else msg = null
       # msg = lmessage.render_message()
     if msg
-      @msgs.append @logTemplate
+      # console.log @msgs
+      # @msgs.append @logTemplate
+      # @logScreen.logRenderMessages
+      # @clusterize.append [@logTemplate
+      @logRenderMessages.push [@logTemplate
         lmessage: lmessage
         level: level
         data: data
-        # msg: msg
-        msg: convert.toHtml(msg)
+        msg: convert.toHtml(msg)]
+      @clusterize.updateThrottle @logRenderMessages
       @$el.find('.messages')[0].scrollTop = @$el.find('.messages')[0].scrollHeight if @logScreen.get('show').autoscroll
 
   _renderMessages: =>
     @msgs.html ''
+    @logRenderMessages = []
     @logScreen.logMessages.forEach @_renderNewLog
 
   render: ->
